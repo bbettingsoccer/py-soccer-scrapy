@@ -1,0 +1,17 @@
+{
+    "action": "CreateSubmissionRequest",
+    "appResource": "/opt/spark-runtime/spark-app/py-resultmatch-etl",
+    "clientSparkVersion": "3.5.3",
+    "mainClass": "org.apache.spark.deploy.SparkSubmit",
+    "environmentVariables": {"SPARK_ENV_LOADED":"1"},
+    "appArgs": ["--py-files","/opt/spark-runtime/spark-app/py-resultmatch-etl", "/opt/spark-runtime/spark-app/py-resultmatch-etl/__main__.py", "P1", "P2"],
+    "sparkProperties": {
+        "spark.driver.supervise": "false",
+        "spark.master": "spark://172.18.0.2:6066",
+        "spark.app.name": "MatchResultSoccer",
+        "spark.submit.deployMode": "cluster",
+        "spark.driver.memory": "1g",
+        "spark.driver.cores": "1",
+        "spark.eventLog.enabled": "true"
+    }
+}

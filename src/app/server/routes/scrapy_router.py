@@ -9,12 +9,12 @@ from ..common.match_constants import MatchConstants
 router = APIRouter()
 
 
-@router.get("/runtime/{crawl}/championship/{championship}/job/{job_instance}", response_description="Match retrieved")
-async def runtime_scrapy(crawl: str, championship: str, job_instance: str):
+@router.get("/runtime/{crawl}/championship/{championship}/job/{job_instance}/date_match/{date_match}", response_description="Match retrieved")
+async def runtime_scrapy(crawl: str, championship: str, job_instance: str, date_match: str):
     service = SoccerScrapyService()
     http_util = HttpRequestResponse()
     try:
-        response_code = await service.scrapy_runtime(crawl, championship, job_instance)
+        response_code = await service.scrapy_runtime(crawl, championship, job_instance, date_match)
         response_http = http_util.check_http_status_code(response_code)
         return response_http
     except Exception as e:
