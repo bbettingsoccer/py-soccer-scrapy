@@ -1,9 +1,13 @@
 class MatchConstants:
-
+    HTTP_SUCCESS = "SUCCESS"
+    HTTP_FAIL = "FAIL"
     HTTP_ERROR = "HttpError"
     DNSLOOKUP_ERROR = "DNSLookupError"
     TIMEOUT_ERROR = "TimeoutError"
     CONNECTION_LOST = "ConnectionLost"
+
+    SCRAPY_SUCCESS = "SCRAPY_SUCCESS"
+    SCRAPY_FAIL = "SCRAPY_FAIL"
 
 
     TYPE_OP_SAVE_OR_FIND_ERROR_BY_CHAMPIONSHIP_JOB = "OP_SAVE_OR_FIND_COLLECTION"
@@ -18,9 +22,6 @@ class MatchConstants:
     GET_REQ_TYPE = "GET"
     POST_REQ_TYPE = "POST"
 
-    HTTP_SUCCESS = "SUCCESS"
-    HTTP_ERROR = "ERROR"
-    HTTP_FAIL = "FAIL"
 
 
     HTTP_SUCCESS_STATUS = 200

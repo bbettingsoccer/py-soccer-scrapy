@@ -7,12 +7,15 @@ class HttpRequestResponse:
 
     def handle_request(self, request_type: str, request_url: str, data: dict):
         http_response = None
-        match request_type:
-            case MatchConstants.GET_REQ_TYPE:
-                http_response = requests.get(request_url)
-            case MatchConstants.POST_REQ_TYPE:
-                http_response = requests.post(request_url, data=data)
-        return self.check_http_status_code(response=http_response)
+        try:
+            match request_type:
+                case MatchConstants.GET_REQ_TYPE:
+                    http_response = requests.get(request_url)
+                case MatchConstants.POST_REQ_TYPE:
+                    http_response = requests.post(request_url, data=data)
+            return self.check_http_status_code(response=http_response)
+        except Exception as e:
+            return self.http_fail_response()
 
     @staticmethod
     def check_http_status_code(response: Response) -> HttpResponseDTO:

@@ -1,9 +1,15 @@
+import os
+
 from fastapi import FastAPI, Response
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
+
 from .common.http_request_response import HttpRequestResponse
 from .model.scrapy_response_model import ScrapyResponseModel
 from .service.scrapy_error_service import ScrapyErrorService
-from .service.soccer_scrapy_service import SoccerScrapyService
+from .service.scrapy_service import ScrapyService
 from .common.match_constants import MatchConstants
+from ...spiders.matchsoccer_spider import MatchsoccerSpider
 
 app = FastAPI()
 
@@ -15,23 +21,22 @@ def read_root(response: Response):
 
 @app.get("/scrapy/runtime/{crawl}/championship/{championship}/job/{job_instance}/date_match/{date_match}")
 async def runtime_scrapy(crawl: str, championship: str, job_instance: str, date_match: str, response: Response):
-    service = SoccerScrapyService()
     http_util = HttpRequestResponse()
     try:
-        # CALL METHOD TEST CONNECTION - SCRAPY
-        response_code = service.check_connection_spider()
-        # CHECK STATUS TEST CONNECTION FOR INVOKE - SCRAPY/SPIDER
-        match response_code.status:
+        print("[INVOKE]-[SoccerScrapyService][runtime_scrapy] :: ")
+        service = ScrapyService(championship=championship, job_instance=job_instance)
+        http_response = service.scrapy_process(crawl=crawl)
+        match http_response.status:
             case MatchConstants.HTTP_SUCCESS:
-                service.scrapy_runtime(crawl, championship, job_instance, date_match)
-                return ScrapyResponseModel.ResponseModel(response_code.response_code, "Data retrieved successfully")
-
-        if response_code.status is not MatchConstants.HTTP_SUCCESS:
-            return ScrapyResponseModel.ErrorResponseModel("Server Error", response_code.response_code, response_code.message)
+                print("+++++ GET runtime_scrapy ++++  SUCCESS >>>>>>>>>>>>>>>")
+                return ScrapyResponseModel.ResponseModel(data=http_response.message, message="Data retrieved successfully")
+            case _:
+                print("+++++ GET runtime_scrapy ++++  ERROR >>>>>>>>>>>>>>>")
+                return ScrapyResponseModel.ErrorResponseModel("Server Error", http_response.response_code, http_response.message)
     except Exception as e:
-        response_http = http_util.http_fail_response()
-        print("Exception Exception Exception Exception Exception Exception ", response_http.response_code)
-        return ScrapyResponseModel.ErrorResponseModel("Server Error", response_http.response_code, response_http.message)
+        response_error = http_util.http_fail_response()
+        print("Exception Exception Exception Exception Exception Exception ", response_error.response_code)
+        return ScrapyResponseModel.ErrorResponseModel("Server Error", response_error.response_code, response_error.message)
 
 
 @app.get("/error/championship/{championship}/job/{job_instance}", response_description="Match retrieved")

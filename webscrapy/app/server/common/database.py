@@ -24,8 +24,8 @@ class MongoManager:
 
     def getConnection(self):
         print("Connect getConnection")
-        connURL = os.environ["DB_URL"]
-        DB_NAME = os.environ["DB_NAME"]
+        connURL = os.getenv('DB_URL')
+        DB_NAME = os.getenv('DB_NAME')
         try:
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)

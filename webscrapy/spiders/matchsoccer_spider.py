@@ -8,19 +8,19 @@ import asyncio
 from ..app.server.common import match_constants
 from ..app.server.model.scrapy_response_model import ScrapyResponseModel
 from ..app.server.service.scrapy_error_service import ScrapyErrorService
-
+from twisted.internet import reactor
 from webscrapy.items import WebscrapyItem
 
 
 class MatchsoccerSpider(scrapy.Spider):
     name = "matchsoccer"
-    allowed_domains = ["placardefutebolL.com.br"]
-    start_urls = ["https://www.placardefutebol.com.br"]
+    allowed_domains = ["placardefutebol.com.br"]
+    start_urls = ["https://www.placardefuteboll.com.br"]
 
 
-    def __init__(self, job_instance, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(MatchsoccerSpider, self).__init__(*args, **kwargs)
-        self.job_instance = job_instance
+        self.job_instance = "test" #job_instance
 
 
     def error_scrapy(self, failure):
@@ -66,7 +66,9 @@ class MatchsoccerSpider(scrapy.Spider):
 
 
         try:
+            print(" ERROROR ...............", os.getenv('COLLECTION_NAME_ERROR'))
             collections = os.getenv('COLLECTION_NAME_ERROR')
+
             scrapyErrorService = ScrapyErrorService(collections)
             scrapyErrorModel = ScrapyResponseModel(code_error=code_error,
                                                    type_error=type_error,
@@ -85,8 +87,7 @@ class MatchsoccerSpider(scrapy.Spider):
         for u in self.start_urls:
             yield scrapy.Request(u, callback=self.parse,
                                  errback=self.error_scrapy,
-                                 dont_filter=True,
-                                 meta={'download_timeout': 10})
+                                 dont_filter=True)
 
     def parse(self, response):
         print("[scrapy]-[parse] ")
@@ -106,3 +107,4 @@ class MatchsoccerSpider(scrapy.Spider):
 
     def closed(self, reason):
         print ('Closed Spider Now: ', reason)
+        #reactor.stop()

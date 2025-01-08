@@ -31,7 +31,7 @@ class WebscrapyPipeline:
         print("open_spider ")
 
         try:
-            self.client = motor.motor_asyncio.AsyncIOMotorClient(self.mongo_uri, maxpoolsize=200)
+            self.client = motor.motor_asyncio.AsyncIOMotorClient(self.mongo_uri, maxpoolsize=500)
             self.db = self.client[self.mongo_db]
             self.db[self.collection_name].delete_many({})
         except Exception as e:
