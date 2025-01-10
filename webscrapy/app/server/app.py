@@ -1,15 +1,11 @@
 import os
 
 from fastapi import FastAPI, Response
-from scrapy.crawler import CrawlerProcess
-from scrapy.utils.project import get_project_settings
-
 from .common.http_request_response import HttpRequestResponse
 from .model.scrapy_response_model import ScrapyResponseModel
 from .service.scrapy_error_service import ScrapyErrorService
 from .service.scrapy_service import ScrapyService
 from .common.match_constants import MatchConstants
-from ...spiders.matchsoccer_spider import MatchsoccerSpider
 
 app = FastAPI()
 
@@ -25,14 +21,13 @@ async def runtime_scrapy(crawl: str, championship: str, job_instance: str, date_
     try:
         print("[INVOKE]-[SoccerScrapyService][runtime_scrapy] :: ")
         service = ScrapyService(championship=championship, job_instance=job_instance)
-        http_response = service.scrapy_process(crawl=crawl)
+        http_response = await service.scrapy_process(crawl=crawl)
         match http_response.status:
             case MatchConstants.HTTP_SUCCESS:
-                print("+++++ GET runtime_scrapy ++++  SUCCESS >>>>>>>>>>>>>>>")
-                return ScrapyResponseModel.ResponseModel(data=http_response.message, message="Data retrieved successfully")
+                return ScrapyResponseModel.ResponseModel(data=http_response.data, message="Data retrieved successfully")
             case _:
                 print("+++++ GET runtime_scrapy ++++  ERROR >>>>>>>>>>>>>>>")
-                return ScrapyResponseModel.ErrorResponseModel("Server Error", http_response.response_code, http_response.message)
+                return ScrapyResponseModel.ErrorResponseModel(http_response.data, http_response.response_code, http_response.message)
     except Exception as e:
         response_error = http_util.http_fail_response()
         print("Exception Exception Exception Exception Exception Exception ", response_error.response_code)

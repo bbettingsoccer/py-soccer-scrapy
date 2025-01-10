@@ -104,3 +104,11 @@ class OperationImplDAO(OperationDAO, ABC):
             return False
 
 
+    async def count_document(self):
+        try:
+            total = await self.instance_collection.count_documents({}) #count_documents({}) #estimated_document_count()#count_documents({})
+            print(" TOTAL REGISTRO COLLECTION ", total)
+            return total
+        except Exception as e:
+            print('[Error]::[OperationImplDAO] - count_document > ', e)
+            return False

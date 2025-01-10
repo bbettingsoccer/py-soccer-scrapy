@@ -1,14 +1,16 @@
 import os
 from crochet import setup
-from scrapy.crawler import CrawlerRunner, CrawlerProcess
+from scrapy.crawler import CrawlerRunner
 from scrapy.utils.project import get_project_settings
+from sqlalchemy.util import await_only
 from twisted.internet import reactor
 from ..common.http_request_response import HttpRequestResponse
+from ..dao.operationimpl_dao import OperationImplDAO
 from ..dto.http_response_dto import HttpResponseDTO
-from ....spiders.matchsoccer_spider import MatchsoccerSpider
 from ..common.match_constants import MatchConstants
 from scrapy.utils.log import configure_logging
 import time
+import asyncio
 
 class ScrapyService:
 
@@ -18,7 +20,8 @@ class ScrapyService:
         os.environ['COLLECTION_NAME'] = championship + MatchConstants.DOMAIN_SCRAPY_CHAMPIONSHIP
         os.environ['COLLECTION_NAME_ERROR'] = championship + MatchConstants.DOMAIN_SCRAPY_ERROR + job_instance
 
-    def scrapy_process(self, crawl: str) -> HttpResponseDTO:
+
+    async def scrapy_process(self, crawl: str) -> HttpResponseDTO:
        httpRequest = HttpRequestResponse()
        response = self.check_connection_spider()
        match response.status:
@@ -26,10 +29,16 @@ class ScrapyService:
                 scrapy_status = self.scrapy_runtime(crawl)
                 time.sleep(7)
                 if scrapy_status == MatchConstants.SCRAPY_SUCCESS:
-                    print(">>>>>>>>>>>>>>>>>>< RETUN SUCCESS >>>>>>>>>>>>>>>")
-                    return response
+                    collection = OperationImplDAO(os.environ['COLLECTION_NAME'])
+                    collection_count = await collection.count_document()
+                    if collection_count == 0:
+                        httpRequestError = httpRequest.http_fail_response()
+                        httpRequestError.data = 0
+                        return httpRequestError
+                    elif collection_count > 0:
+                        response.data = collection_count
+                        return response
                 else:
-                    print(">>>>>>>>>>>>>>>>>>< RETUN ERROR >>>>>>>>>>>>>>>")
                     return httpRequest.http_fail_response()
             case MatchConstants.HTTP_ERROR | MatchConstants.HTTP_FAIL:
                return httpRequest.http_fail_response()

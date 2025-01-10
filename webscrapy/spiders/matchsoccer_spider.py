@@ -15,7 +15,7 @@ from webscrapy.items import WebscrapyItem
 class MatchsoccerSpider(scrapy.Spider):
     name = "matchsoccer"
     allowed_domains = ["placardefutebol.com.br"]
-    start_urls = ["https://www.placardefuteboll.com.br"]
+    start_urls = ["https://www.placardefutebol.com.br"]
 
 
     def __init__(self, *args, **kwargs):
@@ -75,9 +75,10 @@ class MatchsoccerSpider(scrapy.Spider):
                                                    error_desc=error_desc,
                                                    datetime_scrapy=dateTime_now)
 
-            loop = asyncio.get_running_loop()
-            if loop and loop.is_running():
-                tsk = loop.create_task(scrapyErrorService.save(scrapyErrorModel))
+            asyncio.run(scrapyErrorService.save(scrapyErrorModel))
+            #loop = asyncio.get_running_loop()
+            #if loop and loop.is_running():
+            #    tsk = loop.create_task(scrapyErrorService.save(scrapyErrorModel))
 
         except Exception as e:
             print("[ERROR][error_scrapy] :: ", e)

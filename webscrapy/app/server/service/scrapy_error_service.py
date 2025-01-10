@@ -7,15 +7,12 @@ from ...server.model.scrapy_response_model import ScrapyResponseModel
 class ScrapyErrorService:
 
     def __init__(self, collection_name: str):
-        print("COLLECTION -- NAME ", collection_name)
-        self.db = OperationImplDAO(collection_name)
+        self.db  = OperationImplDAO(collection_name)
 
     async def getErrorByCollection(self):
         objectL = []
         try:
             objects = await self.db.find_condition(None)
-            print("10000000000000000000000000 Find-Collection ", objects)
-
             if objects:
                 for objected in objects:
                     objectL.append(ScrapyResponseModel.data_helper(objected))

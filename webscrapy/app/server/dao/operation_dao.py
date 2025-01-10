@@ -44,3 +44,7 @@ class OperationDAO(metaclass=ABCMeta):
     @abstractmethod
     async def list_all_collection(self):
         pass
+
+    @abstractmethod
+    async def count_document(self):
+        pass

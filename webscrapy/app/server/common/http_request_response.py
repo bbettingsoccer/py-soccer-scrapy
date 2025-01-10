@@ -45,3 +45,12 @@ class HttpRequestResponse:
         httpResponse.status = MatchConstants.HTTP_FAIL
         httpResponse.data = None
         return httpResponse
+
+    @staticmethod
+    def http_error_func_response() -> HttpResponseDTO:
+        httpResponse = HttpResponseDTO()
+        httpResponse.message = MatchConstants.HTTP_CLIENT_ERROR_422
+        httpResponse.response_code = MatchConstants.HTTP_ERROR_UNPROCESSABLE_ENTITY
+        httpResponse.status = MatchConstants.HTTP_ERROR
+        httpResponse.data = None
+        return httpResponse

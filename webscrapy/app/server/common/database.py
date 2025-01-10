@@ -25,14 +25,14 @@ class MongoManager:
     def getConnection(self):
         print("Connect getConnection")
         connURL = os.getenv('DB_URL')
-        DB_NAME = os.getenv('DB_NAME')
+        DB_NAME = os.environ["DB_NAME"]
         try:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            client = motor.motor_asyncio.AsyncIOMotorClient(connURL, serverSelectionTimeoutMS=5000, io_loop=loop)
-            client.get_io_loop = asyncio.get_running_loop
+            #loop = asyncio.new_event_loop()
+            #asyncio.set_event_loop(loop)
+            client = motor.motor_asyncio.AsyncIOMotorClient(connURL, serverSelectionTimeoutMS=5000)
+            #client.get_io_loop = asyncio.get_running_loop
             database = client[DB_NAME]
-            print("Connect SUCCESS.", database.list_collection_names())
+            #print("Connect SUCCESS.", database.list_collection_names())
             return database
         except Exception:
             print("Unable to connect to the server.")
