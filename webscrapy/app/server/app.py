@@ -1,6 +1,8 @@
 import os
 
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Response, Body
+
+from .api.request_api import RequestApi
 from .common.http_request_response import HttpRequestResponse
 from .model.scrapy_response_model import ScrapyResponseModel
 from .service.scrapy_error_service import ScrapyErrorService
@@ -15,19 +17,14 @@ def read_root(response: Response):
     return {"message": "Welcome to this SheduleMatch domain !"}
 
 
-@app.get("/scrapy/runtime/{crawl}/championship/{championship}/job/{job_instance}/date_match/{date_match}")
-async def runtime_scrapy(crawl: str, championship: str, job_instance: str, date_match: str, response: Response):
+@app.post(path="/scrapy/runtime")
+async def runtime_scrapy(data: RequestApi = Body(...)):
     http_util = HttpRequestResponse()
     try:
         print("[INVOKE]-[SoccerScrapyService][runtime_scrapy] :: ")
-        service = ScrapyService(championship=championship, job_instance=job_instance)
-        http_response = await service.scrapy_process(crawl=crawl)
-        match http_response.status:
-            case MatchConstants.HTTP_SUCCESS:
-                return ScrapyResponseModel.ResponseModel(data=http_response.data, message="Data retrieved successfully")
-            case _:
-                print("+++++ GET runtime_scrapy ++++  ERROR >>>>>>>>>>>>>>>")
-                return ScrapyResponseModel.ErrorResponseModel(http_response.data, http_response.response_code, http_response.message)
+        service = ScrapyService(championship=data.championship, job_instance=data.job_instance)
+        http_response = await service.scrapy_process(crawl=data.crawl)
+        return http_response
     except Exception as e:
         response_error = http_util.http_fail_response()
         print("Exception Exception Exception Exception Exception Exception ", response_error.response_code)
