@@ -2,7 +2,6 @@ import os
 from crochet import setup
 from scrapy.crawler import CrawlerRunner
 from scrapy.utils.project import get_project_settings
-from sqlalchemy.util import await_only
 from twisted.internet import reactor
 from ..common.http_request_response import HttpRequestResponse
 from ..dao.operationimpl_dao import OperationImplDAO
@@ -19,19 +18,28 @@ class ScrapyService:
         setup()
         os.environ['COLLECTION_NAME'] = championship + MatchConstants.DOMAIN_SCRAPY_CHAMPIONSHIP
         os.environ['COLLECTION_NAME_ERROR'] = championship + MatchConstants.DOMAIN_SCRAPY_ERROR + job_instance
+        print("[D]-[ScrapyService]  :: ")
 
 
     async def scrapy_process(self, crawl: str) -> HttpResponseDTO:
+       print("[E]-[scrapy_process]  :: ")
        httpRequest = HttpRequestResponse()
        response = self.check_connection_spider()
+       print("[E]-[scrapy_process]  :: ")
        match response.status:
             case MatchConstants.HTTP_SUCCESS:
+                print("[F]-[scrapy_process]  :: ")
                 scrapy_status = self.scrapy_runtime(crawl)
+                print("[H]-[scrapy_process]  :: ")
                 time.sleep(7)
+                print("[I]-[scrapy_process]  :: ")
                 if scrapy_status == MatchConstants.SCRAPY_SUCCESS:
+                    print("[J]-[scrapy_process]  :: ")
                     collection = OperationImplDAO(os.environ['COLLECTION_NAME'])
                     collection_count = await collection.count_document()
+                    print("[L]-[scrapy_process]  :: ")
                     if collection_count == 0:
+                        print("[M]-[scrapy_process]  :: ")
                         httpRequestError = httpRequest.http_fail_response()
                         httpRequestError.data = 0
                         return httpRequestError
@@ -41,12 +49,16 @@ class ScrapyService:
                 else:
                     return httpRequest.http_fail_response()
             case MatchConstants.HTTP_ERROR | MatchConstants.HTTP_FAIL:
-               return httpRequest.http_fail_response()
+                print("[ERROR]-[scrapy_process]  :: ")
+                return httpRequest.http_fail_response()
 
     @staticmethod
     def check_connection_spider():
+        print("[F]-[check_connection_spider]  :: ")
         httpRequest = HttpRequestResponse()
         url_test = os.getenv("SCRAPY_TEST_URL")
+        print("[F]-[URL]  :: ", url_test)
+
         return httpRequest.handle_request(request_type=MatchConstants.GET_REQ_TYPE, request_url=url_test,
                                       data=None)
 

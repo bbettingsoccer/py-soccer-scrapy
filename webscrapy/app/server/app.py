@@ -3,6 +3,7 @@ import os
 from fastapi import FastAPI, Response, Body
 
 from .api.request_api import RequestApi
+from .common.enviroment_conf import env_check
 from .common.http_request_response import HttpRequestResponse
 from .model.scrapy_response_model import ScrapyResponseModel
 from .service.scrapy_error_service import ScrapyErrorService
@@ -10,7 +11,7 @@ from .service.scrapy_service import ScrapyService
 from .common.match_constants import MatchConstants
 
 app = FastAPI()
-
+env_check()
 
 @app.get("/")
 def read_root(response: Response):
@@ -21,9 +22,11 @@ def read_root(response: Response):
 async def runtime_scrapy(data: RequestApi = Body(...)):
     http_util = HttpRequestResponse()
     try:
-        print("[INVOKE]-[SoccerScrapyService][runtime_scrapy] :: ")
+        print("[A]-[SoccerScrapyService][runtime_scrapy] :: ")
         service = ScrapyService(championship=data.championship, job_instance=data.job_instance)
+        print("[B]-[SoccerScrapyService][runtime_scrapy] :: ")
         http_response = await service.scrapy_process(crawl=data.crawl)
+        print("[C]-[SoccerScrapyService][runtime_scrapy] :: ")
         return http_response
     except Exception as e:
         response_error = http_util.http_fail_response()

@@ -15,13 +15,16 @@ def get_path_file(folder1: str, folder2: str, file: str) -> Path:
 
 def env_check():
     env_file = None
-    if os.environ['ENVIRONMENT_TYPE'] == 'DEV':
+    environment = os.environ.get("ENVIRONMENT_TYPE")
+    print("ENV_TYPE", environment)
+
+    if environment == "DEV":
         path_file = get_path_file(folder1="env", folder2=None, file="dev.env")
         print("PATH.ENV DEV", path_file)
         env_file = find_dotenv(path_file)
         load_dotenv(env_file)
 
-    elif os.environ['ENVIRONMENT_TYPE'] == 'PRO':
+    elif environment == 'PRO':
         path_file = get_path_file(folder1="env", folder2=None, file="pro.env")
         print("PATH.ENV DEV", path_file)
         env_file = find_dotenv(path_file)

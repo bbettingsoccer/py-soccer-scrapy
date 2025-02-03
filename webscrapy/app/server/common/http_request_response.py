@@ -6,6 +6,7 @@ from ..dto.http_response_dto import HttpResponseDTO
 class HttpRequestResponse:
 
     def handle_request(self, request_type: str, request_url: str, data: dict):
+        print("[ ******* ] = handle_request ")
         http_response = None
         try:
             match request_type:
@@ -13,6 +14,7 @@ class HttpRequestResponse:
                     http_response = requests.get(request_url)
                 case MatchConstants.POST_REQ_TYPE:
                     http_response = requests.post(request_url, data=data)
+            print("[ REQ ++++++ ] = handle_request ", http_response.status_code)
             return self.check_http_status_code(response=http_response)
         except Exception as e:
             return self.http_fail_response()
